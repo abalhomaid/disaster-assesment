@@ -26,6 +26,8 @@ from tllib.utils.meter import AverageMeter, ProgressMeter
 from tllib.utils.logger import CompleteLogger
 from tllib.utils.analysis import collect_feature, tsne, a_distance
 
+import os
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
@@ -95,6 +97,7 @@ def main(args: argparse.Namespace):
     # resume from the best checkpoint
     if args.phase != 'train':
         checkpoint = torch.load(logger.get_checkpoint_path('best'), map_location='cpu')
+        print(f'Loading model from {logger.get_checkpoint_path("best")}')
         classifier.load_state_dict(checkpoint)
 
     # analysis the model
@@ -113,8 +116,26 @@ def main(args: argparse.Namespace):
         return
 
     if args.phase == 'test':
-        acc1 = utils.validate(test_loader, classifier, args, device)
-        print(acc1)
+        # acc1 = utils.validate(test_loader, classifier, args, device)
+        # print(acc1)
+        print('testing phase..')
+        try:
+            import pandas as pd
+        except ModuleNotFoundError:
+            # Error handling
+            return
+
+        checkpoint = torch.load(logger.get_checkpoint_path('best'), map_location='cpu')
+        classifier.load_state_dict(checkpoint)
+        metrics = []
+        accuracy, precision, recall, f1, cm = utils.custom_validate(test_loader, classifier, args, device)
+        exp = args.log.split('/')[-1]
+        metrics.append([exp, accuracy, precision, recall, f1])
+        base_path = '/home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/train_jobs/cdan'
+        metrics = pd.DataFrame(metrics, columns=['exp', 'accuracy', 'precision', 'recall', 'f1'])
+        confusion_matrix = pd.DataFrame(cm)
+        metrics.to_csv(os.path.join(base_path, args.log, 'metrics_output.csv'), index=False)
+        confusion_matrix.to_csv(os.path.join(base_path, args.log, 'confusion_matrix.csv'), index=False)
         return
 
     # start training
@@ -144,9 +165,25 @@ def main(args: argparse.Namespace):
     logger.close()
 
 
+def discrepancy_slice_wasserstein(p1, p2):
+    s = p1.shape
+    if s[1]>1:
+        proj = torch.randn(s[1], 128).cuda()
+        proj *= torch.rsqrt(torch.sum(torch.mul(proj, proj), 0, keepdim=True)).cuda()
+        p1 = torch.matmul(p1, proj)
+        p2 = torch.matmul(p2, proj)
+    p1 = torch.topk(p1, s[0], dim=0)[0]
+    p2 = torch.topk(p2, s[0], dim=0)[0]
+    dist = p1-p2
+    wdist = torch.mean(torch.mul(dist, dist))
+    return wdist
+
 def train(train_source_iter: ForeverDataIterator, train_target_iter: ForeverDataIterator, model: ImageClassifier,
           domain_adv: ConditionalDomainAdversarialLoss, optimizer: SGD,
           lr_scheduler: LambdaLR, epoch: int, args: argparse.Namespace):
+    if args.lambda_s is not None:
+        print('Using Wasserstein loss')
+
     batch_time = AverageMeter('Time', ':3.1f')
     data_time = AverageMeter('Data', ':3.1f')
     losses = AverageMeter('Loss', ':3.2f')
@@ -180,10 +217,18 @@ def train(train_source_iter: ForeverDataIterator, train_target_iter: ForeverData
         y_s, y_t = y.chunk(2, dim=0)
         f_s, f_t = f.chunk(2, dim=0)
 
+        # take the predictions y_s, y_t to
+        # Fatima's code: discrepancy_slice_wasserstein(pt,ps)
+        # CDAN's new loss: discrepancy_slice_wasserstein(y_t,y_s)
+
         cls_loss = F.cross_entropy(y_s, labels_s)
         transfer_loss = domain_adv(y_s, f_s, y_t, f_t)
         domain_acc = domain_adv.domain_discriminator_accuracy
-        loss = cls_loss + transfer_loss * args.trade_off
+
+        if args.lambda_s is not None:
+            loss = cls_loss + transfer_loss * args.trade_off + discrepancy_slice_wasserstein(y_t, y_s) * args.lambda_s
+        else:
+            loss = cls_loss + transfer_loss * args.trade_off
 
         cls_acc = accuracy(y_s, labels_s)[0]
 
@@ -277,5 +322,6 @@ if __name__ == '__main__':
     parser.add_argument("--phase", type=str, default='train', choices=['train', 'test', 'analysis'],
                         help="When phase is 'test', only test the model."
                              "When phase is 'analysis', only analysis the model.")
+    parser.add_argument("--lambda_s", type=float, help="hyperparameter for wasserstein loss")
     args = parser.parse_args()
     main(args)

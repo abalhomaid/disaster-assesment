@@ -21,8 +21,10 @@ import tllib.vision.datasets as datasets
 import tllib.vision.models as models
 import tllib.normalization.ibn as ibn_models
 from tllib.vision.transforms import ResizeImage
-from tllib.utils.metric import accuracy
+from tllib.utils.metric import accuracy, ConfusionMatrix
 from tllib.utils.meter import AverageMeter, ProgressMeter
+from tllib.vision.datasets.imagelist import MultipleDomainsDataset
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 
 
 def get_model_names():
@@ -78,6 +80,44 @@ class ConcatDatasetWithDomainLabel(ConcatDataset):
         domain_id = self.index_to_domain_id[index]
         return img, target, domain_id
 
+
+def da_get_dataset(dataset_name, root, source, target, train_source_transform, val_transform, train_target_transform=None):
+    if train_target_transform is None:
+        train_target_transform = train_source_transform
+    if dataset_name == "Digits":
+        train_source_dataset = datasets.__dict__[source[0]](osp.join(root, source[0]), download=True,
+                                                            transform=train_source_transform)
+        train_target_dataset = datasets.__dict__[target[0]](osp.join(root, target[0]), download=True,
+                                                            transform=train_target_transform)
+        val_dataset = test_dataset = datasets.__dict__[target[0]](osp.join(root, target[0]), split='test',
+                                                                  download=True, transform=val_transform)
+        class_names = datasets.MNIST.get_classes()
+        num_classes = len(class_names)
+    elif dataset_name in datasets.__dict__:
+        # load datasets from tllib.vision.datasets
+        dataset = datasets.__dict__[dataset_name]
+
+        def concat_dataset(tasks, start_idx, **kwargs):
+            # return ConcatDataset([dataset(task=task, **kwargs) for task in tasks])
+            return MultipleDomainsDataset([dataset(task=task, **kwargs) for task in tasks], tasks,
+                                          domain_ids=list(range(start_idx, start_idx + len(tasks))))
+
+        train_source_dataset = concat_dataset(root=root, tasks=source, download=True, transform=train_source_transform,
+                                              start_idx=0)
+        train_target_dataset = concat_dataset(root=root, tasks=target, download=True, transform=train_target_transform,
+                                              start_idx=len(source))
+        val_dataset = concat_dataset(root=root, tasks=target, download=True, transform=val_transform,
+                                     start_idx=len(source))
+        if dataset_name == 'DomainNet':
+            test_dataset = concat_dataset(root=root, tasks=target, split='test', download=True, transform=val_transform,
+                                          start_idx=len(source))
+        else:
+            test_dataset = val_dataset
+        class_names = train_source_dataset.datasets[0].classes
+        num_classes = len(class_names)
+    else:
+        raise NotImplementedError(dataset_name)
+    return train_source_dataset, train_target_dataset, val_dataset, test_dataset, num_classes, class_names
 
 def get_dataset(dataset_name, root, task_list, split='train', download=True, transform=None, seed=0):
     assert split in ['train', 'val', 'test']
@@ -179,6 +219,82 @@ def validate(val_loader, model, args, device) -> float:
         print(' * Acc@1 {top1.avg:.3f} '.format(top1=top1))
 
     return top1.avg
+
+def custom_validate(val_loader, model, args, device) -> float:
+    batch_time = AverageMeter('Time', ':6.3f')
+    losses = AverageMeter('Loss', ':.4e')
+    top1 = AverageMeter('Acc@1', ':6.2f')
+    progress = ProgressMeter(
+        len(val_loader),
+        [batch_time, losses, top1],
+        prefix='Test: ')
+    
+    # custom metrics
+    all_labels = []
+    predictions = []
+
+
+    # switch to evaluate mode
+    model.eval()
+    if args.per_class_eval:
+        confmat = ConfusionMatrix(len(args.class_names))
+    else:
+        confmat = None
+
+    with torch.no_grad():
+        end = time.time()
+        for i, data in enumerate(val_loader):
+            images, target = data[:2]
+            images = images.to(device)
+            target = target.to(device)
+
+            # compute output
+            output = model(images)
+            loss = F.cross_entropy(output, target)
+
+            # custom metrics
+            topk=(1,)
+            maxk = max(topk)
+            _, pred = output.topk(maxk, 1, True, True)
+            # pred = pred.t()
+            pred = pred.flatten()
+
+            all_labels.append(target.cpu().numpy().tolist())
+            predictions.append(pred.cpu().numpy().tolist())
+
+            # measure accuracy and record loss
+            acc1, = accuracy(output, target, topk=(1,))
+            if confmat:
+                confmat.update(target, output.argmax(1))
+            losses.update(loss.item(), images.size(0))
+            top1.update(acc1.item(), images.size(0))
+
+            # measure elapsed time
+            batch_time.update(time.time() - end)
+            end = time.time()
+
+            if i % args.print_freq == 0:
+                progress.display(i)
+
+        print(' * Acc@1 {top1.avg:.3f}'.format(top1=top1))
+        if confmat:
+            print(confmat.format(args.class_names))
+
+    predictions = [item for sublist in predictions for item in sublist]
+    all_labels = [item for sublist in all_labels for item in sublist]
+
+    print(predictions)
+    print()
+    print(all_labels)
+
+
+    acc = accuracy_score(all_labels, predictions)
+    precision = precision_score(all_labels, predictions)
+    recall = recall_score(all_labels, predictions)
+    f1 = f1_score(all_labels, predictions)
+    cm = confusion_matrix(all_labels, predictions)
+
+    return acc, precision, recall, f1, cm
 
 
 def get_train_transform(resizing='default', random_horizontal_flip=True, random_color_jitter=True,

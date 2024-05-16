@@ -96,6 +96,7 @@ class CompleteLogger:
         if name is None:
             name = self._get_phase_or_epoch()
         name = str(name)
+        print(f'Checkpoint path: {os.path.join(self.checkpoint_directory, name + ".pth")}')
         return os.path.join(self.checkpoint_directory, name + ".pth")
 
     def close(self):

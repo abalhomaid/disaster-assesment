@@ -21,6 +21,7 @@ from tllib.vision.transforms import ResizeImage
 from tllib.utils.metric import accuracy, ConfusionMatrix
 from tllib.utils.meter import AverageMeter, ProgressMeter
 from tllib.vision.datasets.imagelist import MultipleDomainsDataset
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 
 
 def get_model_names():
@@ -139,6 +140,120 @@ def validate(val_loader, model, args, device) -> float:
             print(confmat.format(args.class_names))
 
     return top1.avg
+
+# TODO:
+def proxy_a_distance(source_X, target_X, verbose=False):
+    """
+    Compute the Proxy-A-Distance of a source/target representation
+    """
+    nb_source = np.shape(source_X)[0]
+    nb_target = np.shape(target_X)[0]
+
+    if verbose:
+        print('PAD on', (nb_source, nb_target), 'examples')
+
+    C_list = np.logspace(-5, 4, 10)
+
+    half_source, half_target = int(nb_source/2), int(nb_target/2)
+    train_X = np.vstack((source_X[0:half_source, :], target_X[0:half_target, :]))
+    train_Y = np.hstack((np.zeros(half_source, dtype=int), np.ones(half_target, dtype=int)))
+
+    test_X = np.vstack((source_X[half_source:, :], target_X[half_target:, :]))
+    test_Y = np.hstack((np.zeros(nb_source - half_source, dtype=int), np.ones(nb_target - half_target, dtype=int)))
+
+    best_risk = 1.0
+    for C in C_list:
+        clf = svm.SVC(C=C, kernel='linear', verbose=False)
+        clf.fit(train_X, train_Y)
+
+        train_risk = np.mean(clf.predict(train_X) != train_Y)
+        test_risk = np.mean(clf.predict(test_X) != test_Y)
+
+        if verbose:
+            print('[ PAD C = %f ] train risk: %f  test risk: %f' % (C, train_risk, test_risk))
+
+        if test_risk > .5:
+            test_risk = 1. - test_risk
+
+        best_risk = min(best_risk, test_risk)
+
+    return 2 * (1. - 2 * best_risk)
+
+def custom_validate(val_loader, model, args, device) -> float:
+    batch_time = AverageMeter('Time', ':6.3f')
+    losses = AverageMeter('Loss', ':.4e')
+    top1 = AverageMeter('Acc@1', ':6.2f')
+    progress = ProgressMeter(
+        len(val_loader),
+        [batch_time, losses, top1],
+        prefix='Test: ')
+    
+    # custom metrics
+    all_labels = []
+    predictions = []
+
+
+    # switch to evaluate mode
+    model.eval()
+    if args.per_class_eval:
+        confmat = ConfusionMatrix(len(args.class_names))
+    else:
+        confmat = None
+
+    with torch.no_grad():
+        end = time.time()
+        for i, data in enumerate(val_loader):
+            images, target = data[:2]
+            images = images.to(device)
+            target = target.to(device)
+
+            # compute output
+            output = model(images)
+            loss = F.cross_entropy(output, target)
+
+            # custom metrics
+            topk=(1,)
+            maxk = max(topk)
+            _, pred = output.topk(maxk, 1, True, True)
+            # pred = pred.t()
+            pred = pred.flatten()
+
+            all_labels.append(target.cpu().numpy().tolist())
+            predictions.append(pred.cpu().numpy().tolist())
+
+            # measure accuracy and record loss
+            acc1, = accuracy(output, target, topk=(1,))
+            if confmat:
+                confmat.update(target, output.argmax(1))
+            losses.update(loss.item(), images.size(0))
+            top1.update(acc1.item(), images.size(0))
+
+            # measure elapsed time
+            batch_time.update(time.time() - end)
+            end = time.time()
+
+            if i % args.print_freq == 0:
+                progress.display(i)
+
+        print(' * Acc@1 {top1.avg:.3f}'.format(top1=top1))
+        if confmat:
+            print(confmat.format(args.class_names))
+
+    predictions = [item for sublist in predictions for item in sublist]
+    all_labels = [item for sublist in all_labels for item in sublist]
+
+    print(predictions)
+    print()
+    print(all_labels)
+
+
+    acc = accuracy_score(all_labels, predictions)
+    precision = precision_score(all_labels, predictions)
+    recall = recall_score(all_labels, predictions)
+    f1 = f1_score(all_labels, predictions)
+    cm = confusion_matrix(all_labels, predictions)
+
+    return acc, precision, recall, f1, cm
 
 
 def get_train_transform(resizing='default', scale=(0.08, 1.0), ratio=(3. / 4., 4. / 3.), random_horizontal_flip=True,

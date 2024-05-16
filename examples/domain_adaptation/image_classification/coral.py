@@ -19,7 +19,8 @@ import torch.nn.functional as F
 
 import utils
 from tllib.modules.domain_discriminator import DomainDiscriminator
-from tllib.alignment.dann import DomainAdversarialLoss, ImageClassifier
+# from tllib.alignment.cdan import ConditionalDomainAdversarialLoss, ImageClassifier
+from tllib.alignment.coral import CorrelationAlignmentLoss, ImageClassifier
 from tllib.utils.data import ForeverDataIterator
 from tllib.utils.metric import accuracy
 from tllib.utils.meter import AverageMeter, ProgressMeter
@@ -75,15 +76,28 @@ def main(args: argparse.Namespace):
     pool_layer = nn.Identity() if args.no_pool else None
     classifier = ImageClassifier(backbone, num_classes, bottleneck_dim=args.bottleneck_dim,
                                  pool_layer=pool_layer, finetune=not args.scratch).to(device)
-    domain_discri = DomainDiscriminator(in_feature=classifier.features_dim, hidden_size=1024).to(device)
+    classifier_feature_dim = classifier.features_dim
 
+    if args.randomized:
+        domain_discri = DomainDiscriminator(args.randomized_dim, hidden_size=1024).to(device)
+    else:
+        domain_discri = DomainDiscriminator(classifier_feature_dim * num_classes, hidden_size=1024).to(device)
+
+    all_parameters = classifier.get_parameters() + domain_discri.get_parameters()
     # define optimizer and lr scheduler
-    optimizer = SGD(classifier.get_parameters() + domain_discri.get_parameters(),
-                    args.lr, momentum=args.momentum, weight_decay=args.weight_decay, nesterov=True)
+    optimizer = SGD(all_parameters, args.lr, momentum=args.momentum, weight_decay=args.weight_decay, nesterov=True)
+
+    # Coral DG uses CosineLR
     lr_scheduler = LambdaLR(optimizer, lambda x: args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
 
     # define loss function
-    domain_adv = DomainAdversarialLoss(domain_discri).to(device)
+    # domain_adv = ConditionalDomainAdversarialLoss(
+    #     domain_discri, entropy_conditioning=args.entropy,
+    #     num_classes=num_classes, features_dim=classifier_feature_dim, randomized=args.randomized,
+    #     randomized_dim=args.randomized_dim
+    # ).to(device)
+
+    domain_adv = CorrelationAlignmentLoss().to(device)
 
     # resume from the best checkpoint
     if args.phase != 'train':
@@ -119,16 +133,12 @@ def main(args: argparse.Namespace):
         checkpoint = torch.load(logger.get_checkpoint_path('best'), map_location='cpu')
         classifier.load_state_dict(checkpoint)
         metrics = []
-        accuracy, precision, recall, f1, cm = utils.custom_validate(test_loader, classifier, args, device)
+        accuracy, precision, recall, f1 = utils.custom_validate(test_loader, classifier, args, device)
         exp = args.log.split('/')[-1]
         metrics.append([exp, accuracy, precision, recall, f1])
-        base_path = '/home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/train_jobs/cdan'
+        base_path = '/home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/train_jobs/coral'
         metrics = pd.DataFrame(metrics, columns=['exp', 'accuracy', 'precision', 'recall', 'f1'])
-        confusion_matrix = pd.DataFrame(cm)
         metrics.to_csv(os.path.join(base_path, args.log, 'metrics_output.csv'), index=False)
-        confusion_matrix.to_csv(os.path.join(base_path, args.log, 'confusion_matrix.csv'), index=False)
-        
-
         return
 
     # start training
@@ -157,6 +167,7 @@ def main(args: argparse.Namespace):
 
     logger.close()
 
+
 def discrepancy_slice_wasserstein(p1, p2):
     s = p1.shape
     if s[1]>1:
@@ -168,27 +179,29 @@ def discrepancy_slice_wasserstein(p1, p2):
     p2 = torch.topk(p2, s[0], dim=0)[0]
     dist = p1-p2
     wdist = torch.mean(torch.mul(dist, dist))
+    
     return wdist
 
-def train(train_source_iter: ForeverDataIterator, train_target_iter: ForeverDataIterator,
-          model: ImageClassifier, domain_adv: DomainAdversarialLoss, optimizer: SGD,
+def train(train_source_iter: ForeverDataIterator, train_target_iter: ForeverDataIterator, model: ImageClassifier,
+          domain_adv: CorrelationAlignmentLoss, optimizer: SGD,
           lr_scheduler: LambdaLR, epoch: int, args: argparse.Namespace):
     if args.lambda_s is not None:
         print('Using Wasserstein loss')
 
-    batch_time = AverageMeter('Time', ':5.2f')
-    data_time = AverageMeter('Data', ':5.2f')
-    losses = AverageMeter('Loss', ':6.2f')
+    batch_time = AverageMeter('Time', ':3.1f')
+    data_time = AverageMeter('Data', ':3.1f')
+    losses = AverageMeter('Loss', ':3.2f')
+    trans_losses = AverageMeter('Trans Loss', ':3.2f')
     cls_accs = AverageMeter('Cls Acc', ':3.1f')
     domain_accs = AverageMeter('Domain Acc', ':3.1f')
     progress = ProgressMeter(
         args.iters_per_epoch,
-        [batch_time, data_time, losses, cls_accs, domain_accs],
+        [batch_time, data_time, losses, trans_losses, cls_accs, domain_accs],
         prefix="Epoch: [{}]".format(epoch))
 
     # switch to train mode
     model.train()
-    domain_adv.train()
+    # domain_adv.train()
 
     end = time.time()
     for i in range(args.iters_per_epoch):
@@ -213,7 +226,7 @@ def train(train_source_iter: ForeverDataIterator, train_target_iter: ForeverData
         # CDAN's new loss: discrepancy_slice_wasserstein(y_t,y_s)
 
         cls_loss = F.cross_entropy(y_s, labels_s)
-        transfer_loss = domain_adv(f_s, f_t)
+        transfer_loss = domain_adv(y_s, f_s, y_t, f_t)
         domain_acc = domain_adv.domain_discriminator_accuracy
 
         if args.lambda_s is not None:
@@ -224,8 +237,9 @@ def train(train_source_iter: ForeverDataIterator, train_target_iter: ForeverData
         cls_acc = accuracy(y_s, labels_s)[0]
 
         losses.update(loss.item(), x_s.size(0))
-        cls_accs.update(cls_acc.item(), x_s.size(0))
-        domain_accs.update(domain_acc.item(), x_s.size(0))
+        cls_accs.update(cls_acc, x_s.size(0))
+        domain_accs.update(domain_acc, x_s.size(0))
+        trans_losses.update(transfer_loss.item(), x_s.size(0))
 
         # compute gradient and do SGD step
         optimizer.zero_grad()
@@ -242,7 +256,7 @@ def train(train_source_iter: ForeverDataIterator, train_target_iter: ForeverData
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='DANN for Unsupervised Domain Adaptation')
+    parser = argparse.ArgumentParser(description='CDAN for Unsupervised Domain Adaptation')
     # dataset parameters
     parser.add_argument('root', metavar='DIR',
                         help='root path of dataset')
@@ -276,6 +290,11 @@ if __name__ == '__main__':
     parser.add_argument('--no-pool', action='store_true',
                         help='no pool layer after the feature extractor.')
     parser.add_argument('--scratch', action='store_true', help='whether train from scratch.')
+    parser.add_argument('-r', '--randomized', action='store_true',
+                        help='using randomized multi-linear-map (default: False)')
+    parser.add_argument('-rd', '--randomized-dim', default=1024, type=int,
+                        help='randomized dimension when using randomized multi-linear-map (default: 1024)')
+    parser.add_argument('--entropy', default=False, action='store_true', help='use entropy conditioning')
     parser.add_argument('--trade-off', default=1., type=float,
                         help='the trade-off hyper-parameter for transfer loss')
     # training parameters
@@ -286,8 +305,7 @@ if __name__ == '__main__':
                         metavar='LR', help='initial learning rate', dest='lr')
     parser.add_argument('--lr-gamma', default=0.001, type=float, help='parameter for lr scheduler')
     parser.add_argument('--lr-decay', default=0.75, type=float, help='parameter for lr scheduler')
-    parser.add_argument('--momentum', default=0.9, type=float, metavar='M',
-                        help='momentum')
+    parser.add_argument('--momentum', default=0.9, type=float, metavar='M', help='momentum')
     parser.add_argument('--wd', '--weight-decay', default=1e-3, type=float,
                         metavar='W', help='weight decay (default: 1e-3)',
                         dest='weight_decay')
@@ -303,7 +321,7 @@ if __name__ == '__main__':
                         help='seed for initializing training. ')
     parser.add_argument('--per-class-eval', action='store_true',
                         help='whether output per-class accuracy during evaluation')
-    parser.add_argument("--log", type=str, default='dann',
+    parser.add_argument("--log", type=str, default='cdan',
                         help="Where to save logs, checkpoints and debugging images.")
     parser.add_argument("--phase", type=str, default='train', choices=['train', 'test', 'analysis'],
                         help="When phase is 'test', only test the model."
