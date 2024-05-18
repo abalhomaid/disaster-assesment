@@ -1,0 +1,4 @@
+source,target,model,swd,accuracy,precision,recall,f1
+E,M,dann,0.0,0.748,0.855,0.714,0.778
+E,N,dann,0.0,0.862,0.906,0.852,0.878
+E,R,dann,0.0,0.788,0.818,0.760,0.788
