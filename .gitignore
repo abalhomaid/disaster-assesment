@@ -8,6 +8,11 @@ __pycache__/
 output_*.txt
 test-*.txt
 train-*.txt
+train_jobs/cdan/train_*
+train_jobs/cdan/logs/*/Damage_*
+metric_jobs/cdan/logs/*/Damage_*
+metric_jobs/cdan/metric_*
+
 
 # C extensions
 *.so
