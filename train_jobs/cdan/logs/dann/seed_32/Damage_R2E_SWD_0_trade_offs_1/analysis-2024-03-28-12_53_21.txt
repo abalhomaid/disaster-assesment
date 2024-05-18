@@ -1,0 +1,34 @@
+Namespace(arch='resnet50', batch_size=32, bottleneck_dim=256, data='Damage', epochs=50, iters_per_epoch=1000, lambda_s=0.0, log='/home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/train_jobs/cdan/logs/dann/seed_32/Damage_R2E_SWD_0_trade_offs_1', lr=0.01, lr_decay=0.75, lr_gamma=0.001, momentum=0.9, no_hflip=False, no_pool=False, norm_mean=(0.485, 0.456, 0.406), norm_std=(0.229, 0.224, 0.225), per_class_eval=False, phase='analysis', print_freq=100, ratio=[0.75, 1.3333333333333333], resize_size=224, root='/home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/data/damage', scale=[0.08, 1.0], scratch=False, seed=32, source=['R'], target=['E'], trade_off=1.0, train_resizing='default', val_resizing='default', weight_decay=0.001, workers=2)
+/home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/examples/domain_adaptation/image_classification/dann.py:42: UserWarning: You have chosen to seed training. This will turn on the CUDNN deterministic setting, which can slow down your training considerably! You may see unexpected behavior when restarting from checkpoints.
+  warnings.warn('You have chosen to seed training. '
+train_transform:  Compose(
+    Compose(
+    ResizeImage(size=(256, 256))
+    RandomResizedCrop(size=(224, 224), scale=(0.08, 1.0), ratio=(0.75, 1.3333), interpolation=PIL.Image.BILINEAR)
+)
+    RandomHorizontalFlip(p=0.5)
+    ToTensor()
+    Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
+)
+val_transform:  Compose(
+    Compose(
+    ResizeImage(size=(256, 256))
+    CenterCrop(size=(224, 224))
+)
+    ToTensor()
+    Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
+)
+=> using model 'resnet50'
+Checkpoint path: /home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/train_jobs/cdan/logs/dann/seed_32/Damage_R2E_SWD_0_trade_offs_1/checkpoints/best.pth
+Checkpoint path: /home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/train_jobs/cdan/logs/dann/seed_32/Damage_R2E_SWD_0_trade_offs_1/checkpoints/best.pth
+Loading model from /home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/train_jobs/cdan/logs/dann/seed_32/Damage_R2E_SWD_0_trade_offs_1/checkpoints/best.pth
+  0%|          | 0/9 [00:00<?, ?it/s] 11%|#1        | 1/9 [00:00<00:07,  1.13it/s] 33%|###3      | 3/9 [00:01<00:01,  3.54it/s] 56%|#####5    | 5/9 [00:01<00:00,  5.38it/s] 78%|#######7  | 7/9 [00:01<00:00,  5.64it/s]100%|##########| 9/9 [00:01<00:00,  5.71it/s]100%|##########| 9/9 [00:01<00:00,  4.63it/s]
+  0%|          | 0/9 [00:00<?, ?it/s] 11%|#1        | 1/9 [00:00<00:04,  1.64it/s] 33%|###3      | 3/9 [00:00<00:01,  3.56it/s] 56%|#####5    | 5/9 [00:01<00:00,  4.31it/s] 78%|#######7  | 7/9 [00:01<00:00,  4.92it/s]100%|##########| 9/9 [00:02<00:00,  4.62it/s]100%|##########| 9/9 [00:02<00:00,  4.15it/s]
+Saving t-SNE to /home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/train_jobs/cdan/logs/dann/seed_32/Damage_R2E_SWD_0_trade_offs_1/visualize/TSNE.pdf
+Traceback (most recent call last):
+  File "/home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/examples/domain_adaptation/image_classification/dann.py", line 313, in <module>
+    main(args)
+  File "/home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/examples/domain_adaptation/image_classification/dann.py", line 105, in main
+    A_distance = a_distance.calculate(source_feature, target_feature, device)
+  File "/home/local/QCRI/abalhomaid/tools/anaconda3/envs/tllib_metric/lib/python3.8/site-packages/tllib-0.4-py3.8.egg/tllib/utils/analysis/a_distance.py", line 107, in calculate
+TypeError: 'DataLoader' object is not subscriptable

@@ -1,0 +1,73 @@
+Namespace(arch='resnet50', batch_size=36, data='Damage', dropout_p=0.1, epochs=50, finetune=False, freeze_bn=False, guassian=False, iters_per_epoch=500, lambda_s=0.0, log='/home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/train_jobs/cdan/logs/coral/seed_32/Damage_E2N_SWD_0_trade_offs_1', lr=0.0005, momentum=0.9, n_domains_per_batch=3, no_pool=False, per_class_eval=False, phase='analysis', print_freq=100, root='/home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/data/damage', seed=32, source=['E'], target=['N'], trade_off=1.0, train_resizing='default', val_resizing='default', wd=0.0005, workers=4)
+/home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/examples/domain_generalization/image_classification/coral.py:41: UserWarning: You have chosen to seed training. This will turn on the CUDNN deterministic setting, which can slow down your training considerably! You may see unexpected behavior when restarting from checkpoints.
+  warnings.warn('You have chosen to seed training. '
+train_transform:  Compose(
+    RandomResizedCrop(size=(224, 224), scale=(0.7, 1.0), ratio=(0.75, 1.3333), interpolation=PIL.Image.BILINEAR)
+    RandomHorizontalFlip(p=0.5)
+    ColorJitter(brightness=[0.7, 1.3], contrast=[0.7, 1.3], saturation=[0.7, 1.3], hue=[-0.3, 0.3])
+    RandomGrayscale(p=0.1)
+    ToTensor()
+    Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+)
+val_transform:  Compose(
+    ResizeImage(size=(224, 224))
+    ToTensor()
+    Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+)
+=> using pre-trained model 'resnet50'
+Checkpoint path: /home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/train_jobs/cdan/logs/coral/seed_32/Damage_E2N_SWD_0_trade_offs_1/checkpoints/best.pth
+  0%|          | 0/531 [00:00<?, ?it/s]  0%|          | 1/531 [00:01<10:50,  1.23s/it]  1%|          | 3/531 [00:01<03:20,  2.64it/s]  1%|          | 5/531 [00:01<01:55,  4.57it/s]  1%|1         | 7/531 [00:01<01:20,  6.52it/s]  2%|1         | 9/531 [00:01<01:02,  8.35it/s]  2%|2         | 11/531 [00:02<01:07,  7.70it/s]  2%|2         | 13/531 [00:02<00:55,  9.28it/s]  3%|2         | 15/531 [00:02<00:48, 10.68it/s]  3%|3         | 17/531 [00:02<00:43, 11.94it/s]  4%|3         | 19/531 [00:02<00:50, 10.12it/s]  4%|3         | 21/531 [00:03<01:13,  6.96it/s]  4%|4         | 23/531 [00:03<01:14,  6.86it/s]  5%|4         | 25/531 [00:03<01:04,  7.84it/s]  5%|5         | 27/531 [00:04<01:24,  5.94it/s]  5%|5         | 29/531 [00:04<01:08,  7.30it/s]  6%|5         | 31/531 [00:04<01:01,  8.19it/s]  6%|6         | 33/531 [00:04<00:52,  9.57it/s]  7%|6         | 35/531 [00:04<00:47, 10.46it/s]  7%|6         | 37/531 [00:05<00:53,  9.21it/s]  7%|7         | 39/531 [00:05<01:00,  8.16it/s]  8%|7         | 41/531 [00:05<01:08,  7.20it/s]  8%|8         | 43/531 [00:05<00:57,  8.53it/s]  8%|8         | 45/531 [00:06<01:13,  6.65it/s]  9%|8         | 47/531 [00:06<01:00,  8.01it/s]  9%|9         | 49/531 [00:06<00:53,  8.99it/s] 10%|9         | 51/531 [00:06<00:46, 10.37it/s] 10%|9         | 53/531 [00:06<00:42, 11.14it/s] 10%|#         | 55/531 [00:07<00:38, 12.26it/s] 11%|#         | 57/531 [00:07<01:19,  5.96it/s] 11%|#1        | 59/531 [00:07<01:04,  7.36it/s] 11%|#1        | 61/531 [00:08<01:07,  7.01it/s] 12%|#1        | 63/531 [00:08<00:55,  8.41it/s] 12%|#2        | 65/531 [00:08<01:02,  7.50it/s] 13%|#2        | 67/531 [00:08<00:52,  8.90it/s] 13%|#2        | 69/531 [00:08<00:50,  9.11it/s] 13%|#3        | 71/531 [00:09<01:10,  6.51it/s] 14%|#3        | 73/531 [00:09<00:57,  7.94it/s] 14%|#4        | 75/531 [00:09<00:52,  8.63it/s] 15%|#4        | 77/531 [00:10<01:46,  4.26it/s] 15%|#4        | 79/531 [00:10<01:22,  5.47it/s] 15%|#5        | 81/531 [00:11<01:08,  6.59it/s] 16%|#5        | 83/531 [00:11<00:55,  8.00it/s] 16%|#6        | 85/531 [00:11<00:53,  8.39it/s] 16%|#6        | 87/531 [00:11<01:01,  7.23it/s] 17%|#6        | 89/531 [00:11<00:52,  8.45it/s] 17%|#7        | 91/531 [00:12<00:51,  8.50it/s] 18%|#7        | 93/531 [00:12<00:50,  8.68it/s] 18%|#7        | 95/531 [00:12<00:43, 10.05it/s] 18%|#8        | 97/531 [00:12<00:53,  8.11it/s] 18%|#8        | 98/531 [00:13<01:04,  6.76it/s] 19%|#8        | 100/531 [00:13<00:51,  8.40it/s] 19%|#8        | 100/531 [00:14<01:01,  7.02it/s]
+  0%|          | 0/531 [00:00<?, ?it/s]  0%|          | 1/531 [00:00<07:35,  1.16it/s]  1%|          | 3/531 [00:01<02:26,  3.61it/s]  1%|          | 5/531 [00:01<01:36,  5.48it/s]  1%|1         | 7/531 [00:01<01:11,  7.30it/s]  2%|1         | 9/531 [00:01<01:02,  8.33it/s]  2%|2         | 11/531 [00:01<01:04,  8.02it/s]  2%|2         | 13/531 [00:01<00:54,  9.57it/s]  3%|2         | 15/531 [00:02<00:56,  9.16it/s]  3%|3         | 17/531 [00:02<00:48, 10.50it/s]  4%|3         | 19/531 [00:02<00:58,  8.78it/s]  4%|3         | 21/531 [00:03<01:23,  6.14it/s]  4%|4         | 23/531 [00:03<01:11,  7.07it/s]  5%|4         | 25/531 [00:03<01:11,  7.04it/s]  5%|5         | 27/531 [00:04<01:23,  6.06it/s]  5%|5         | 29/531 [00:04<01:07,  7.43it/s]  6%|5         | 31/531 [00:04<00:58,  8.55it/s]  6%|6         | 33/531 [00:04<00:53,  9.39it/s]  7%|6         | 35/531 [00:04<00:47, 10.42it/s]  7%|6         | 37/531 [00:04<00:59,  8.37it/s]  7%|7         | 39/531 [00:05<00:58,  8.37it/s]  8%|7         | 41/531 [00:05<01:11,  6.84it/s]  8%|8         | 43/531 [00:05<00:59,  8.22it/s]  8%|8         | 45/531 [00:06<01:14,  6.52it/s]  9%|8         | 47/531 [00:06<01:01,  7.91it/s]  9%|9         | 49/531 [00:06<00:54,  8.82it/s] 10%|9         | 51/531 [00:06<00:47, 10.16it/s] 10%|9         | 53/531 [00:06<00:42, 11.19it/s] 10%|#         | 55/531 [00:06<00:38, 12.25it/s] 11%|#         | 57/531 [00:07<01:18,  6.01it/s] 11%|#1        | 59/531 [00:07<01:03,  7.38it/s] 11%|#1        | 61/531 [00:08<01:06,  7.10it/s] 12%|#1        | 63/531 [00:08<00:55,  8.50it/s] 12%|#2        | 65/531 [00:08<01:00,  7.71it/s] 13%|#2        | 67/531 [00:08<00:51,  9.07it/s] 13%|#2        | 69/531 [00:08<00:48,  9.54it/s] 13%|#3        | 71/531 [00:09<01:08,  6.69it/s] 14%|#3        | 73/531 [00:09<00:56,  8.09it/s] 14%|#4        | 75/531 [00:09<00:53,  8.51it/s] 15%|#4        | 77/531 [00:10<01:41,  4.48it/s] 15%|#4        | 79/531 [00:10<01:19,  5.70it/s] 15%|#5        | 81/531 [00:10<01:05,  6.83it/s] 16%|#5        | 83/531 [00:11<00:54,  8.16it/s] 16%|#6        | 85/531 [00:11<00:50,  8.75it/s] 16%|#6        | 87/531 [00:11<00:58,  7.62it/s] 17%|#6        | 89/531 [00:11<00:50,  8.72it/s] 17%|#7        | 91/531 [00:11<00:50,  8.79it/s] 18%|#7        | 93/531 [00:12<00:50,  8.76it/s] 18%|#7        | 95/531 [00:12<00:43, 10.10it/s] 18%|#8        | 97/531 [00:12<00:52,  8.24it/s] 18%|#8        | 98/531 [00:12<01:03,  6.86it/s] 19%|#8        | 100/531 [00:13<00:50,  8.45it/s] 19%|#8        | 100/531 [00:13<01:00,  7.15it/s]
+3600 3600
+Saving t-SNE to /home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/train_jobs/cdan/logs/coral/seed_32/Damage_E2N_SWD_0_trade_offs_1/visualize/TSNE.png
+epoch 0 accuracy: 49.66666793823242 A-dist: 0.013333320617675781
+epoch 1 accuracy: 49.86111068725586 A-dist: 0.005555629730224609
+epoch 2 accuracy: 49.6944465637207 A-dist: 0.0122222900390625
+epoch 3 accuracy: 49.583335876464844 A-dist: 0.016666650772094727
+epoch 4 accuracy: 49.63888931274414 A-dist: 0.014444351196289062
+epoch 5 accuracy: 49.61111068725586 A-dist: 0.015555620193481445
+epoch 6 accuracy: 49.63888931274414 A-dist: 0.014444351196289062
+epoch 7 accuracy: 49.66666793823242 A-dist: 0.013333320617675781
+epoch 8 accuracy: 49.6944465637207 A-dist: 0.0122222900390625
+epoch 9 accuracy: 49.6944465637207 A-dist: 0.0122222900390625
+epoch 10 accuracy: 49.80555725097656 A-dist: 0.007777690887451172
+epoch 11 accuracy: 49.833335876464844 A-dist: 0.006666660308837891
+epoch 12 accuracy: 49.77777862548828 A-dist: 0.008888721466064453
+epoch 13 accuracy: 49.77777862548828 A-dist: 0.008888721466064453
+epoch 14 accuracy: 49.722225189208984 A-dist: 0.011111021041870117
+epoch 15 accuracy: 49.63888931274414 A-dist: 0.014444351196289062
+epoch 16 accuracy: 49.63888931274414 A-dist: 0.014444351196289062
+epoch 17 accuracy: 49.583335876464844 A-dist: 0.016666650772094727
+epoch 18 accuracy: 49.583335876464844 A-dist: 0.016666650772094727
+epoch 19 accuracy: 49.5 A-dist: 0.019999980926513672
+epoch 20 accuracy: 49.4444465637207 A-dist: 0.022222042083740234
+epoch 21 accuracy: 49.472225189208984 A-dist: 0.021111011505126953
+epoch 22 accuracy: 49.38888931274414 A-dist: 0.024444580078125
+epoch 23 accuracy: 49.27777862548828 A-dist: 0.028888940811157227
+epoch 24 accuracy: 49.25 A-dist: 0.03000020980834961
+epoch 25 accuracy: 49.25 A-dist: 0.03000020980834961
+epoch 26 accuracy: 49.25 A-dist: 0.03000020980834961
+epoch 27 accuracy: 49.222225189208984 A-dist: 0.03111100196838379
+epoch 28 accuracy: 49.13888931274414 A-dist: 0.034444332122802734
+epoch 29 accuracy: 49.1944465637207 A-dist: 0.03222227096557617
+epoch 30 accuracy: 49.13888931274414 A-dist: 0.034444332122802734
+epoch 31 accuracy: 49.16666793823242 A-dist: 0.03333330154418945
+epoch 32 accuracy: 49.222225189208984 A-dist: 0.03111100196838379
+epoch 33 accuracy: 49.1944465637207 A-dist: 0.03222227096557617
+epoch 34 accuracy: 49.13888931274414 A-dist: 0.034444332122802734
+epoch 35 accuracy: 49.13888931274414 A-dist: 0.034444332122802734
+epoch 36 accuracy: 49.05555725097656 A-dist: 0.03777790069580078
+epoch 37 accuracy: 49.05555725097656 A-dist: 0.03777790069580078
+epoch 38 accuracy: 49.02777862548828 A-dist: 0.03888893127441406
+epoch 39 accuracy: 49.05555725097656 A-dist: 0.03777790069580078
+epoch 40 accuracy: 48.972225189208984 A-dist: 0.041110992431640625
+epoch 41 accuracy: 48.9444465637207 A-dist: 0.042222023010253906
+epoch 42 accuracy: 48.9444465637207 A-dist: 0.042222023010253906
+epoch 43 accuracy: 48.9444465637207 A-dist: 0.042222023010253906
+epoch 44 accuracy: 48.972225189208984 A-dist: 0.041110992431640625
+epoch 45 accuracy: 48.91666793823242 A-dist: 0.04333329200744629
+epoch 46 accuracy: 48.88888931274414 A-dist: 0.04444456100463867
+epoch 47 accuracy: 48.91666793823242 A-dist: 0.04333329200744629
+epoch 48 accuracy: 48.91666793823242 A-dist: 0.04333329200744629
+epoch 49 accuracy: 48.88888931274414 A-dist: 0.04444456100463867
+A-distance = tensor(0.0444, device='cuda:0')

@@ -1,0 +1,46 @@
+Namespace(arch='resnet50', batch_size=36, data='Damage', dropout_p=0.1, epochs=50, finetune=False, freeze_bn=False, guassian=False, iters_per_epoch=500, lambda_s=0.0, log='/home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/train_jobs/cdan/logs/coral/seed_32/Damage_M2E_SWD_0_trade_offs_1', lr=0.0005, momentum=0.9, n_domains_per_batch=3, no_pool=False, per_class_eval=False, phase='analysis', print_freq=100, root='/home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/data/damage', seed=32, source=['M'], target=['E'], trade_off=1.0, train_resizing='default', val_resizing='default', wd=0.0005, workers=4)
+/home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/examples/domain_generalization/image_classification/coral.py:41: UserWarning: You have chosen to seed training. This will turn on the CUDNN deterministic setting, which can slow down your training considerably! You may see unexpected behavior when restarting from checkpoints.
+  warnings.warn('You have chosen to seed training. '
+train_transform:  Compose(
+    RandomResizedCrop(size=(224, 224), scale=(0.7, 1.0), ratio=(0.75, 1.3333), interpolation=PIL.Image.BILINEAR)
+    RandomHorizontalFlip(p=0.5)
+    ColorJitter(brightness=[0.7, 1.3], contrast=[0.7, 1.3], saturation=[0.7, 1.3], hue=[-0.3, 0.3])
+    RandomGrayscale(p=0.1)
+    ToTensor()
+    Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+)
+val_transform:  Compose(
+    ResizeImage(size=(224, 224))
+    ToTensor()
+    Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+)
+=> using pre-trained model 'resnet50'
+/home/local/QCRI/abalhomaid/tools/anaconda3/envs/tllib_metric/lib/python3.8/site-packages/torch/cuda/__init__.py:104: UserWarning: 
+NVIDIA A16 with CUDA capability sm_86 is not compatible with the current PyTorch installation.
+The current PyTorch install supports CUDA capabilities sm_37 sm_50 sm_60 sm_70 sm_75.
+If you want to use the NVIDIA A16 GPU with PyTorch, please check the instructions at https://pytorch.org/get-started/locally/
+
+  warnings.warn(incompatible_device_warn.format(device_name, capability, " ".join(arch_list), device_name))
+Checkpoint path: /home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/train_jobs/cdan/logs/coral/seed_32/Damage_M2E_SWD_0_trade_offs_1/checkpoints/best.pth
+  0%|          | 0/48 [00:00<?, ?it/s]  0%|          | 0/48 [00:01<?, ?it/s]
+Traceback (most recent call last):
+  File "/home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/examples/domain_generalization/image_classification/coral.py", line 377, in <module>
+    main(args)
+  File "/home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/examples/domain_generalization/image_classification/coral.py", line 113, in main
+    source_feature = utils.collect_feature(val_loader, feature_extractor, device, max_num_features=100)
+  File "/export/home/abalhomaid/projects/disaster/Transfer-Learning-Library/examples/domain_generalization/image_classification/utils.py", line 410, in collect_feature
+    feature = feature_extractor(images).cpu()
+  File "/home/local/QCRI/abalhomaid/tools/anaconda3/envs/tllib_metric/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/local/QCRI/abalhomaid/tools/anaconda3/envs/tllib_metric/lib/python3.8/site-packages/torch/nn/modules/container.py", line 117, in forward
+    input = module(input)
+  File "/home/local/QCRI/abalhomaid/tools/anaconda3/envs/tllib_metric/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/local/QCRI/abalhomaid/tools/anaconda3/envs/tllib_metric/lib/python3.8/site-packages/tllib-0.4-py3.8.egg/tllib/vision/models/resnet.py", line 29, in forward
+  File "/home/local/QCRI/abalhomaid/tools/anaconda3/envs/tllib_metric/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/local/QCRI/abalhomaid/tools/anaconda3/envs/tllib_metric/lib/python3.8/site-packages/torch/nn/modules/activation.py", line 102, in forward
+    return F.relu(input, inplace=self.inplace)
+  File "/home/local/QCRI/abalhomaid/tools/anaconda3/envs/tllib_metric/lib/python3.8/site-packages/torch/nn/functional.py", line 1134, in relu
+    result = torch.relu_(input)
+RuntimeError: CUDA error: no kernel image is available for execution on the device

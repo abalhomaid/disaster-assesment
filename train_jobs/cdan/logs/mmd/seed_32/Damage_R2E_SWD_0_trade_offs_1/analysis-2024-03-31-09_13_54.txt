@@ -1,0 +1,73 @@
+Namespace(arch='resnet50', batch_size=36, data='Damage', dropout_p=0.1, epochs=50, finetune=False, freeze_bn=False, guassian=True, iters_per_epoch=500, lambda_s=0.0, log='/home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/train_jobs/cdan/logs/mmd/seed_32/Damage_R2E_SWD_0_trade_offs_1', lr=0.0005, momentum=0.9, n_domains_per_batch=3, no_pool=False, per_class_eval=False, phase='analysis', print_freq=100, root='/home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/data/damage', seed=32, source=['R'], target=['E'], trade_off=1.0, train_resizing='default', val_resizing='default', wd=0.0005, workers=4)
+/home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/examples/domain_generalization/image_classification/mmd.py:41: UserWarning: You have chosen to seed training. This will turn on the CUDNN deterministic setting, which can slow down your training considerably! You may see unexpected behavior when restarting from checkpoints.
+  warnings.warn('You have chosen to seed training. '
+train_transform:  Compose(
+    RandomResizedCrop(size=(224, 224), scale=(0.7, 1.0), ratio=(0.75, 1.3333), interpolation=PIL.Image.BILINEAR)
+    RandomHorizontalFlip(p=0.5)
+    ColorJitter(brightness=[0.7, 1.3], contrast=[0.7, 1.3], saturation=[0.7, 1.3], hue=[-0.3, 0.3])
+    RandomGrayscale(p=0.1)
+    ToTensor()
+    Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+)
+val_transform:  Compose(
+    ResizeImage(size=(224, 224))
+    ToTensor()
+    Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+)
+=> using pre-trained model 'resnet50'
+Checkpoint path: /home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/train_jobs/cdan/logs/mmd/seed_32/Damage_R2E_SWD_0_trade_offs_1/checkpoints/best.pth
+  0%|          | 0/9 [00:00<?, ?it/s] 11%|#1        | 1/9 [00:01<00:08,  1.10s/it] 22%|##2       | 2/9 [00:01<00:03,  1.95it/s] 44%|####4     | 4/9 [00:01<00:01,  4.33it/s] 67%|######6   | 6/9 [00:01<00:00,  6.52it/s] 89%|########8 | 8/9 [00:01<00:00,  8.51it/s]100%|##########| 9/9 [00:02<00:00,  4.49it/s]
+  0%|          | 0/9 [00:00<?, ?it/s] 11%|#1        | 1/9 [00:00<00:05,  1.41it/s] 33%|###3      | 3/9 [00:00<00:01,  4.32it/s] 56%|#####5    | 5/9 [00:01<00:00,  4.56it/s] 78%|#######7  | 7/9 [00:01<00:00,  6.56it/s]100%|##########| 9/9 [00:01<00:00,  5.75it/s]
+299 299
+Saving t-SNE to /home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/train_jobs/cdan/logs/mmd/seed_32/Damage_R2E_SWD_0_trade_offs_1/visualize/TSNE.png
+epoch 0 accuracy: 48.829429626464844 A-dist: 0.04682302474975586
+epoch 1 accuracy: 49.16387939453125 A-dist: 0.033444881439208984
+epoch 2 accuracy: 49.16387939453125 A-dist: 0.033444881439208984
+epoch 3 accuracy: 49.16387939453125 A-dist: 0.033444881439208984
+epoch 4 accuracy: 48.829429626464844 A-dist: 0.04682302474975586
+epoch 5 accuracy: 49.16387939453125 A-dist: 0.033444881439208984
+epoch 6 accuracy: 49.16387939453125 A-dist: 0.033444881439208984
+epoch 7 accuracy: 48.829429626464844 A-dist: 0.04682302474975586
+epoch 8 accuracy: 48.829429626464844 A-dist: 0.04682302474975586
+epoch 9 accuracy: 48.829429626464844 A-dist: 0.04682302474975586
+epoch 10 accuracy: 48.829429626464844 A-dist: 0.04682302474975586
+epoch 11 accuracy: 48.829429626464844 A-dist: 0.04682302474975586
+epoch 12 accuracy: 48.4949836730957 A-dist: 0.06020069122314453
+epoch 13 accuracy: 48.4949836730957 A-dist: 0.06020069122314453
+epoch 14 accuracy: 48.829429626464844 A-dist: 0.04682302474975586
+epoch 15 accuracy: 48.829429626464844 A-dist: 0.04682302474975586
+epoch 16 accuracy: 48.4949836730957 A-dist: 0.06020069122314453
+epoch 17 accuracy: 48.4949836730957 A-dist: 0.06020069122314453
+epoch 18 accuracy: 48.4949836730957 A-dist: 0.06020069122314453
+epoch 19 accuracy: 48.4949836730957 A-dist: 0.06020069122314453
+epoch 20 accuracy: 48.829429626464844 A-dist: 0.04682302474975586
+epoch 21 accuracy: 48.829429626464844 A-dist: 0.04682302474975586
+epoch 22 accuracy: 48.4949836730957 A-dist: 0.06020069122314453
+epoch 23 accuracy: 48.1605339050293 A-dist: 0.0735788345336914
+epoch 24 accuracy: 48.1605339050293 A-dist: 0.0735788345336914
+epoch 25 accuracy: 47.826087951660156 A-dist: 0.08695650100708008
+epoch 26 accuracy: 47.826087951660156 A-dist: 0.08695650100708008
+epoch 27 accuracy: 47.826087951660156 A-dist: 0.08695650100708008
+epoch 28 accuracy: 47.826087951660156 A-dist: 0.08695650100708008
+epoch 29 accuracy: 48.1605339050293 A-dist: 0.0735788345336914
+epoch 30 accuracy: 47.826087951660156 A-dist: 0.08695650100708008
+epoch 31 accuracy: 47.826087951660156 A-dist: 0.08695650100708008
+epoch 32 accuracy: 47.49163818359375 A-dist: 0.10033464431762695
+epoch 33 accuracy: 47.49163818359375 A-dist: 0.10033464431762695
+epoch 34 accuracy: 47.49163818359375 A-dist: 0.10033464431762695
+epoch 35 accuracy: 47.49163818359375 A-dist: 0.10033464431762695
+epoch 36 accuracy: 47.49163818359375 A-dist: 0.10033464431762695
+epoch 37 accuracy: 47.157188415527344 A-dist: 0.11371254920959473
+epoch 38 accuracy: 47.157188415527344 A-dist: 0.11371254920959473
+epoch 39 accuracy: 46.8227424621582 A-dist: 0.1270904541015625
+epoch 40 accuracy: 46.8227424621582 A-dist: 0.1270904541015625
+epoch 41 accuracy: 47.157188415527344 A-dist: 0.11371254920959473
+epoch 42 accuracy: 47.157188415527344 A-dist: 0.11371254920959473
+epoch 43 accuracy: 47.157188415527344 A-dist: 0.11371254920959473
+epoch 44 accuracy: 47.157188415527344 A-dist: 0.11371254920959473
+epoch 45 accuracy: 47.157188415527344 A-dist: 0.11371254920959473
+epoch 46 accuracy: 46.8227424621582 A-dist: 0.1270904541015625
+epoch 47 accuracy: 46.8227424621582 A-dist: 0.1270904541015625
+epoch 48 accuracy: 46.8227424621582 A-dist: 0.1270904541015625
+epoch 49 accuracy: 46.8227424621582 A-dist: 0.1270904541015625
+A-distance = tensor(0.1271, device='cuda:0')

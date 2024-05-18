@@ -1,0 +1,34 @@
+Namespace(arch='resnet50', batch_size=32, bottleneck_dim=256, data='Damage', entropy=False, epochs=50, iters_per_epoch=1000, lambda_s=0.0, log='/home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/train_jobs/cdan/logs/cdan/seed_32/Damage_R2E_SWD_0_trade_offs_1', lr=0.01, lr_decay=0.75, lr_gamma=0.001, momentum=0.9, no_hflip=False, no_pool=False, norm_mean=(0.485, 0.456, 0.406), norm_std=(0.229, 0.224, 0.225), per_class_eval=False, phase='analysis', print_freq=100, randomized=False, randomized_dim=1024, ratio=[0.75, 1.3333333333333333], resize_size=224, root='/home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/data/damage', scale=[0.08, 1.0], scratch=False, seed=32, source=['R'], target=['E'], trade_off=1.0, train_resizing='default', val_resizing='default', weight_decay=0.001, workers=2)
+/home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/examples/domain_adaptation/image_classification/cdan.py:42: UserWarning: You have chosen to seed training. This will turn on the CUDNN deterministic setting, which can slow down your training considerably! You may see unexpected behavior when restarting from checkpoints.
+  warnings.warn('You have chosen to seed training. '
+train_transform:  Compose(
+    Compose(
+    ResizeImage(size=(256, 256))
+    RandomResizedCrop(size=(224, 224), scale=(0.08, 1.0), ratio=(0.75, 1.3333), interpolation=PIL.Image.BILINEAR)
+)
+    RandomHorizontalFlip(p=0.5)
+    ToTensor()
+    Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
+)
+val_transform:  Compose(
+    Compose(
+    ResizeImage(size=(256, 256))
+    CenterCrop(size=(224, 224))
+)
+    ToTensor()
+    Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
+)
+=> using model 'resnet50'
+Checkpoint path: /home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/train_jobs/cdan/logs/cdan/seed_32/Damage_R2E_SWD_0_trade_offs_1/checkpoints/best.pth
+Checkpoint path: /home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/train_jobs/cdan/logs/cdan/seed_32/Damage_R2E_SWD_0_trade_offs_1/checkpoints/best.pth
+Loading model from /home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/train_jobs/cdan/logs/cdan/seed_32/Damage_R2E_SWD_0_trade_offs_1/checkpoints/best.pth
+  0%|          | 0/9 [00:00<?, ?it/s] 11%|#1        | 1/9 [00:00<00:06,  1.15it/s] 33%|###3      | 3/9 [00:01<00:01,  3.58it/s] 56%|#####5    | 5/9 [00:01<00:00,  5.84it/s] 78%|#######7  | 7/9 [00:01<00:00,  5.97it/s] 89%|########8 | 8/9 [00:01<00:00,  6.09it/s]100%|##########| 9/9 [00:01<00:00,  5.95it/s]100%|##########| 9/9 [00:01<00:00,  4.84it/s]
+  0%|          | 0/9 [00:00<?, ?it/s] 11%|#1        | 1/9 [00:00<00:03,  2.22it/s] 33%|###3      | 3/9 [00:00<00:01,  4.23it/s] 56%|#####5    | 5/9 [00:01<00:00,  5.04it/s] 78%|#######7  | 7/9 [00:01<00:00,  3.94it/s]100%|##########| 9/9 [00:02<00:00,  4.41it/s]100%|##########| 9/9 [00:02<00:00,  4.15it/s]
+Saving t-SNE to /home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/train_jobs/cdan/logs/cdan/seed_32/Damage_R2E_SWD_0_trade_offs_1/visualize/TSNE.pdf
+trainX, trainY
+testX, testY
+/home/local/QCRI/abalhomaid/tools/anaconda3/envs/tllib_metric/lib/python3.8/site-packages/sklearn/utils/validation.py:1183: DataConversionWarning: A column-vector y was passed when a 1d array was expected. Please change the shape of y to (n_samples, ), for example using ravel().
+  y = column_or_1d(y, warn=True)
+train risk: 1.000000  test risk: 1.000000
+best risk: 0.000000 temp a-distance: 2.000000 
+A-distance = 2.0

@@ -1,0 +1,33 @@
+Namespace(arch='resnet50', batch_size=36, data='Damage', dropout_p=0.1, epochs=50, finetune=False, freeze_bn=False, guassian=False, iters_per_epoch=500, lambda_s=0.0, log='/home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/train_jobs/cdan/logs/coral/seed_32/Damage_E2R_SWD_0_trade_offs_1', lr=0.0005, momentum=0.9, n_domains_per_batch=3, no_pool=False, per_class_eval=False, phase='analysis', print_freq=100, root='/home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/data/damage', seed=32, source=['E'], target=['R'], trade_off=1.0, train_resizing='default', val_resizing='default', wd=0.0005, workers=4)
+/home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/examples/domain_generalization/image_classification/coral.py:41: UserWarning: You have chosen to seed training. This will turn on the CUDNN deterministic setting, which can slow down your training considerably! You may see unexpected behavior when restarting from checkpoints.
+  warnings.warn('You have chosen to seed training. '
+train_transform:  Compose(
+    RandomResizedCrop(size=(224, 224), scale=(0.7, 1.0), ratio=(0.75, 1.3333), interpolation=PIL.Image.BILINEAR)
+    RandomHorizontalFlip(p=0.5)
+    ColorJitter(brightness=[0.7, 1.3], contrast=[0.7, 1.3], saturation=[0.7, 1.3], hue=[-0.3, 0.3])
+    RandomGrayscale(p=0.1)
+    ToTensor()
+    Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+)
+val_transform:  Compose(
+    ResizeImage(size=(224, 224))
+    ToTensor()
+    Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+)
+=> using pre-trained model 'resnet50'
+Checkpoint path: /home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/train_jobs/cdan/logs/coral/seed_32/Damage_E2R_SWD_0_trade_offs_1/checkpoints/best.pth
+  0%|          | 0/24 [00:00<?, ?it/s]  4%|4         | 1/24 [00:01<00:29,  1.28s/it]  8%|8         | 2/24 [00:01<00:12,  1.69it/s] 12%|#2        | 3/24 [00:01<00:07,  2.72it/s] 17%|#6        | 4/24 [00:01<00:05,  3.79it/s] 21%|##        | 5/24 [00:01<00:03,  4.81it/s] 25%|##5       | 6/24 [00:01<00:03,  5.79it/s] 29%|##9       | 7/24 [00:01<00:02,  6.65it/s] 33%|###3      | 8/24 [00:02<00:02,  7.27it/s] 38%|###7      | 9/24 [00:02<00:02,  7.48it/s] 42%|####1     | 10/24 [00:02<00:01,  7.98it/s] 46%|####5     | 11/24 [00:02<00:01,  8.27it/s] 50%|#####     | 12/24 [00:02<00:01,  8.58it/s] 54%|#####4    | 13/24 [00:02<00:01,  8.82it/s] 58%|#####8    | 14/24 [00:02<00:01,  8.67it/s] 62%|######2   | 15/24 [00:02<00:01,  8.65it/s] 67%|######6   | 16/24 [00:02<00:00,  8.69it/s] 71%|#######   | 17/24 [00:03<00:00,  8.83it/s] 75%|#######5  | 18/24 [00:03<00:00,  8.97it/s] 79%|#######9  | 19/24 [00:03<00:00,  9.07it/s] 83%|########3 | 20/24 [00:03<00:00,  9.13it/s] 88%|########7 | 21/24 [00:03<00:00,  9.19it/s] 92%|#########1| 22/24 [00:03<00:00,  9.29it/s] 96%|#########5| 23/24 [00:03<00:00,  9.34it/s]100%|##########| 24/24 [00:03<00:00,  6.04it/s]100%|##########| 24/24 [00:04<00:00,  5.90it/s]
+  0%|          | 0/24 [00:00<?, ?it/s]  4%|4         | 1/24 [00:00<00:15,  1.45it/s]  8%|8         | 2/24 [00:00<00:07,  2.89it/s] 12%|#2        | 3/24 [00:00<00:04,  4.23it/s] 17%|#6        | 4/24 [00:01<00:03,  5.40it/s] 21%|##        | 5/24 [00:01<00:02,  6.37it/s] 25%|##5       | 6/24 [00:01<00:02,  7.18it/s] 29%|##9       | 7/24 [00:01<00:02,  7.78it/s] 33%|###3      | 8/24 [00:01<00:01,  8.28it/s] 38%|###7      | 9/24 [00:01<00:01,  8.60it/s] 42%|####1     | 10/24 [00:01<00:01,  8.87it/s] 46%|####5     | 11/24 [00:01<00:01,  9.01it/s] 50%|#####     | 12/24 [00:01<00:01,  9.17it/s] 54%|#####4    | 13/24 [00:01<00:01,  9.24it/s] 58%|#####8    | 14/24 [00:02<00:01,  9.36it/s] 62%|######2   | 15/24 [00:02<00:00,  9.33it/s] 67%|######6   | 16/24 [00:02<00:00,  9.34it/s] 71%|#######   | 17/24 [00:02<00:00,  9.28it/s] 75%|#######5  | 18/24 [00:02<00:00,  9.25it/s] 79%|#######9  | 19/24 [00:02<00:00,  9.16it/s] 83%|########3 | 20/24 [00:02<00:00,  9.29it/s] 88%|########7 | 21/24 [00:02<00:00,  9.27it/s] 92%|#########1| 22/24 [00:02<00:00,  9.36it/s] 96%|#########5| 23/24 [00:03<00:00,  9.39it/s]100%|##########| 24/24 [00:03<00:00,  7.68it/s]
+833 833
+Saving t-SNE to /home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/train_jobs/cdan/logs/coral/seed_32/Damage_E2R_SWD_0_trade_offs_1/visualize/TSNE.png
+epoch 0 accuracy: 38.32335662841797 A-dist: -0.46706581115722656
+epoch 1 accuracy: 36.82634735107422 A-dist: -0.5269460678100586
+epoch 2 accuracy: 31.736528396606445 A-dist: -0.7305388450622559
+epoch 3 accuracy: 30.23952293395996 A-dist: -0.7904191017150879
+epoch 4 accuracy: 50.29940414428711 A-dist: 0.011976003646850586
+epoch 5 accuracy: 52.39521026611328 A-dist: 0.09580826759338379
+epoch 6 accuracy: 50.0 A-dist: 0.0
+epoch 7 accuracy: 38.922157287597656 A-dist: -0.4431138038635254
+epoch 8 accuracy: 41.31736755371094 A-dist: -0.3473052978515625
+epoch 9 accuracy: 44.01197814941406 A-dist: -0.23952102661132812
+A-distance = tensor(-0.2395, device='cuda:0')

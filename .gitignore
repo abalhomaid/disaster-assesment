@@ -3,6 +3,12 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# models and logs
+*.pth
+output_*.txt
+test-*.txt
+train-*.txt
+
 # C extensions
 *.so
 

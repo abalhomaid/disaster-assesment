@@ -1,0 +1,27 @@
+Namespace(arch='resnet50', batch_size=36, data='Damage', dropout_p=0.1, epochs=50, finetune=False, freeze_bn=False, guassian=False, iters_per_epoch=500, lambda_s=0.0, log='/home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/train_jobs/cdan/logs/coral/seed_32/Damage_N2E_SWD_0_trade_offs_1', lr=0.0005, momentum=0.9, n_domains_per_batch=3, no_pool=False, per_class_eval=False, phase='analysis', print_freq=100, root='/home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/data/damage', seed=32, source=['N'], target=['E'], trade_off=1.0, train_resizing='default', val_resizing='default', wd=0.0005, workers=4)
+/home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/examples/domain_generalization/image_classification/coral.py:41: UserWarning: You have chosen to seed training. This will turn on the CUDNN deterministic setting, which can slow down your training considerably! You may see unexpected behavior when restarting from checkpoints.
+  warnings.warn('You have chosen to seed training. '
+train_transform:  Compose(
+    RandomResizedCrop(size=(224, 224), scale=(0.7, 1.0), ratio=(0.75, 1.3333), interpolation=PIL.Image.BILINEAR)
+    RandomHorizontalFlip(p=0.5)
+    ColorJitter(brightness=[0.7, 1.3], contrast=[0.7, 1.3], saturation=[0.7, 1.3], hue=[-0.3, 0.3])
+    RandomGrayscale(p=0.1)
+    ToTensor()
+    Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+)
+val_transform:  Compose(
+    ResizeImage(size=(224, 224))
+    ToTensor()
+    Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+)
+=> using pre-trained model 'resnet50'
+Checkpoint path: /home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/train_jobs/cdan/logs/coral/seed_32/Damage_N2E_SWD_0_trade_offs_1/checkpoints/best.pth
+  0%|          | 0/48 [00:00<?, ?it/s]  2%|2         | 1/48 [00:00<00:46,  1.01it/s]  6%|6         | 3/48 [00:01<00:13,  3.25it/s] 10%|#         | 5/48 [00:01<00:07,  5.49it/s] 15%|#4        | 7/48 [00:01<00:05,  7.53it/s] 19%|#8        | 9/48 [00:01<00:04,  9.26it/s] 23%|##2       | 11/48 [00:01<00:03, 10.75it/s] 27%|##7       | 13/48 [00:01<00:02, 12.01it/s] 31%|###1      | 15/48 [00:02<00:03,  9.93it/s] 35%|###5      | 17/48 [00:02<00:03,  9.63it/s] 40%|###9      | 19/48 [00:02<00:02, 10.66it/s] 44%|####3     | 21/48 [00:02<00:02,  9.06it/s] 48%|####7     | 23/48 [00:02<00:02, 10.01it/s] 52%|#####2    | 25/48 [00:03<00:02,  9.21it/s] 56%|#####6    | 27/48 [00:03<00:02,  9.43it/s] 60%|######    | 29/48 [00:03<00:01,  9.86it/s] 65%|######4   | 31/48 [00:03<00:01, 10.15it/s] 69%|######8   | 33/48 [00:03<00:01, 11.31it/s] 73%|#######2  | 35/48 [00:04<00:01,  7.45it/s] 77%|#######7  | 37/48 [00:04<00:01,  8.86it/s] 81%|########1 | 39/48 [00:04<00:00,  9.76it/s] 85%|########5 | 41/48 [00:05<00:01,  5.38it/s] 90%|########9 | 43/48 [00:05<00:00,  6.71it/s] 94%|#########3| 45/48 [00:05<00:00,  7.93it/s] 98%|#########7| 47/48 [00:05<00:00,  8.71it/s]100%|##########| 48/48 [00:06<00:00,  7.69it/s]
+  0%|          | 0/48 [00:00<?, ?it/s]  2%|2         | 1/48 [00:00<00:24,  1.91it/s]  4%|4         | 2/48 [00:00<00:17,  2.69it/s]  8%|8         | 4/48 [00:00<00:07,  5.62it/s] 12%|#2        | 6/48 [00:01<00:05,  7.35it/s] 17%|#6        | 8/48 [00:01<00:04,  9.36it/s] 21%|##        | 10/48 [00:01<00:03,  9.99it/s] 25%|##5       | 12/48 [00:01<00:03, 11.43it/s] 29%|##9       | 14/48 [00:01<00:04,  8.43it/s] 33%|###3      | 16/48 [00:02<00:03,  9.91it/s] 38%|###7      | 18/48 [00:02<00:03,  9.64it/s] 42%|####1     | 20/48 [00:02<00:02, 10.68it/s] 46%|####5     | 22/48 [00:02<00:02,  8.69it/s] 50%|#####     | 24/48 [00:02<00:02, 10.07it/s] 54%|#####4    | 26/48 [00:03<00:02, 10.44it/s] 58%|#####8    | 28/48 [00:03<00:01, 11.34it/s] 62%|######2   | 30/48 [00:03<00:01, 11.22it/s] 67%|######6   | 32/48 [00:03<00:01, 12.22it/s] 71%|#######   | 34/48 [00:03<00:01, 10.98it/s] 75%|#######5  | 36/48 [00:03<00:01,  9.22it/s] 79%|#######9  | 38/48 [00:04<00:00, 10.37it/s] 83%|########3 | 40/48 [00:04<00:01,  5.28it/s] 88%|########7 | 42/48 [00:05<00:00,  6.60it/s] 92%|#########1| 44/48 [00:05<00:00,  7.76it/s] 96%|#########5| 46/48 [00:05<00:00,  9.16it/s]100%|##########| 48/48 [00:05<00:00,  9.45it/s]100%|##########| 48/48 [00:05<00:00,  8.59it/s]
+1724 1724
+Saving t-SNE to /home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/train_jobs/cdan/logs/coral/seed_32/Damage_N2E_SWD_0_trade_offs_1/visualize/TSNE.png
+trainX, trainY
+testX, testY
+train risk: 0.270302  test risk: 0.729698
+best risk: 0.270302 temp a-distance: 0.918794 
+A-distance = 0.9187935034802783

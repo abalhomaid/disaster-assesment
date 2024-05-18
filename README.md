@@ -1,5 +1,36 @@
 # Note: Code is a modified version of [tllib library](https://github.com/thuml/Transfer-Learning-Library) and is referenced in the submission
 
+# Replication steps
+- install python version 3.8.5
+- install conda version 4.12.0
+- conda env create -f tllib.yaml
+  - conda activate tllib
+  - install tllib library: python setup.py install
+- conda env create -f tllib_metric.yaml
+  - conda activate tllib_metric
+  - install tllib library: python setup install
+- train all models:
+  - conda activate tllib
+  - cd train_jobs/cdan
+  - ./run_cdan_swd_single_machine.sh if single machine
+  - ./run_cdan_swd.sh if using slurm
+  - models are saved under ${root}/train_jobs/cdan/logs/${model_name}/seed_${seed}/Damage_${source}2${target}_SWD_${current_swd}_trade_offs_${current_trade_off}
+- evaluate all models:
+  - conda activate tllib_metric
+  - cd metric_jobs/cdan
+  - ./run_cdan_swd_single_machine.sh if single machine
+  - ./run_cdan_swd.sh if using slurm
+  - metrics are saved under ${root}/train_jobs/cdan/logs/${model_name}/seed_${seed}/Damage_${source}2${target}_SWD_${current_swd}_trade_offs_${current_trade_off}
+- adistance:
+  - conda activate tllib_metric
+  - cd metric_jobs/cdan
+  - ./run_cdan_swd_single_machine.sh if single machine
+  - ./run_cdan_swd.sh if using slurm
+  - cd ../..
+  - ./collect_adistance.py
+  - adistances are saved under adistance_all.csv
+
+
 <div align='center' margin-bottom:40px> <img src="logo.png" width=200/> </div>
 
 # Transfer Learning Library

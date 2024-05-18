@@ -1,0 +1,32 @@
+Namespace(arch='resnet50', batch_size=32, bottleneck_dim=256, data='Damage', epochs=50, iters_per_epoch=1000, lambda_s=0.01, log='/home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/train_jobs/cdan/logs/dann/seed_32/Damage_E2R_SWD_0.01_trade_offs_1', lr=0.01, lr_decay=0.75, lr_gamma=0.001, momentum=0.9, no_hflip=False, no_pool=False, norm_mean=(0.485, 0.456, 0.406), norm_std=(0.229, 0.224, 0.225), per_class_eval=False, phase='analysis', print_freq=100, ratio=[0.75, 1.3333333333333333], resize_size=224, root='/home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/data/damage', scale=[0.08, 1.0], scratch=False, seed=32, source=['E'], target=['R'], trade_off=1.0, train_resizing='default', val_resizing='default', weight_decay=0.001, workers=2)
+/home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/examples/domain_adaptation/image_classification/dann.py:42: UserWarning: You have chosen to seed training. This will turn on the CUDNN deterministic setting, which can slow down your training considerably! You may see unexpected behavior when restarting from checkpoints.
+  warnings.warn('You have chosen to seed training. '
+train_transform:  Compose(
+    Compose(
+    ResizeImage(size=(256, 256))
+    RandomResizedCrop(size=(224, 224), scale=(0.08, 1.0), ratio=(0.75, 1.3333), interpolation=PIL.Image.BILINEAR)
+)
+    RandomHorizontalFlip(p=0.5)
+    ToTensor()
+    Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
+)
+val_transform:  Compose(
+    Compose(
+    ResizeImage(size=(256, 256))
+    CenterCrop(size=(224, 224))
+)
+    ToTensor()
+    Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
+)
+=> using model 'resnet50'
+Checkpoint path: /home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/train_jobs/cdan/logs/dann/seed_32/Damage_E2R_SWD_0.01_trade_offs_1/checkpoints/best.pth
+Checkpoint path: /home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/train_jobs/cdan/logs/dann/seed_32/Damage_E2R_SWD_0.01_trade_offs_1/checkpoints/best.pth
+Loading model from /home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/train_jobs/cdan/logs/dann/seed_32/Damage_E2R_SWD_0.01_trade_offs_1/checkpoints/best.pth
+  0%|          | 0/53 [00:00<?, ?it/s]  2%|1         | 1/53 [00:01<01:02,  1.21s/it]  6%|5         | 3/53 [00:01<00:19,  2.63it/s]  9%|9         | 5/53 [00:01<00:12,  3.92it/s] 13%|#3        | 7/53 [00:02<00:10,  4.56it/s] 17%|#6        | 9/53 [00:02<00:10,  4.24it/s] 21%|##        | 11/53 [00:02<00:09,  4.51it/s] 25%|##4       | 13/53 [00:03<00:09,  4.28it/s] 28%|##8       | 15/53 [00:03<00:07,  5.02it/s] 32%|###2      | 17/53 [00:04<00:08,  4.39it/s] 36%|###5      | 19/53 [00:04<00:06,  5.13it/s] 40%|###9      | 21/53 [00:05<00:07,  4.18it/s] 43%|####3     | 23/53 [00:05<00:06,  4.74it/s] 47%|####7     | 25/53 [00:05<00:05,  4.73it/s] 51%|#####     | 27/53 [00:06<00:04,  5.30it/s] 55%|#####4    | 29/53 [00:06<00:04,  5.82it/s] 58%|#####8    | 31/53 [00:06<00:03,  5.85it/s] 62%|######2   | 33/53 [00:07<00:03,  6.23it/s] 66%|######6   | 35/53 [00:07<00:02,  6.52it/s] 70%|######9   | 37/53 [00:07<00:02,  6.66it/s] 74%|#######3  | 39/53 [00:08<00:02,  5.11it/s] 77%|#######7  | 41/53 [00:08<00:02,  4.56it/s] 81%|########1 | 43/53 [00:09<00:02,  4.69it/s] 85%|########4 | 45/53 [00:09<00:01,  5.21it/s] 89%|########8 | 47/53 [00:09<00:01,  5.53it/s] 92%|#########2| 49/53 [00:10<00:00,  5.09it/s] 96%|#########6| 51/53 [00:10<00:00,  5.52it/s]100%|##########| 53/53 [00:10<00:00,  6.01it/s]100%|##########| 53/53 [00:10<00:00,  4.89it/s]
+  0%|          | 0/26 [00:00<?, ?it/s]  4%|3         | 1/26 [00:00<00:10,  2.28it/s] 12%|#1        | 3/26 [00:00<00:05,  4.55it/s] 19%|#9        | 5/26 [00:01<00:03,  5.54it/s] 27%|##6       | 7/26 [00:01<00:03,  6.01it/s] 35%|###4      | 9/26 [00:01<00:02,  6.29it/s] 42%|####2     | 11/26 [00:01<00:02,  6.50it/s] 50%|#####     | 13/26 [00:02<00:01,  6.55it/s] 58%|#####7    | 15/26 [00:02<00:01,  6.63it/s] 65%|######5   | 17/26 [00:02<00:01,  6.65it/s] 73%|#######3  | 19/26 [00:03<00:01,  6.63it/s] 81%|########  | 21/26 [00:03<00:00,  6.78it/s] 88%|########8 | 23/26 [00:03<00:00,  6.77it/s] 96%|#########6| 25/26 [00:03<00:00,  6.71it/s]100%|##########| 26/26 [00:04<00:00,  6.39it/s]
+Saving t-SNE to /home/local/QCRI/abalhomaid/projects/disaster/Transfer-Learning-Library/train_jobs/cdan/logs/dann/seed_32/Damage_E2R_SWD_0.01_trade_offs_1/visualize/TSNE.pdf
+trainX, trainY
+testX, testY
+train risk: 0.133703  test risk: 0.266614
+best risk: 0.266614 temp a-distance: 0.933544 
+A-distance = 0.9335443037974684
